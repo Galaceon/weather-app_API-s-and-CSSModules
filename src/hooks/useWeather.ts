@@ -1,6 +1,16 @@
 import axios from "axios"
 import type { SearchType, Weather } from "../types"
 
+function isWeatherResponse(weather : unknown) : weather is Weather {
+    return (
+        Boolean(weather) &&
+        typeof weather === 'object' &&
+        typeof (weather as Weather).name === 'string' &&
+        typeof (weather as Weather).main.temp === 'number' &&
+        typeof (weather as Weather).main.temp_max === 'number' &&
+        typeof (weather as Weather).main.temp_min === 'number'
+    )
+}
 
 
 export default function useWeather() {
@@ -19,6 +29,13 @@ export default function useWeather() {
             const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${appId}`
 
             const {data: weatherResult} = await axios<Weather>(weatherUrl)
+            const result = isWeatherResponse(weatherResult)
+
+            console.log(weatherResult)
+
+            if(result) {
+                console.log(weatherResult.name)
+            }
 
         } catch (error) {
             console.log(error)
